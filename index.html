@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Intern Advisor Domain Recommender</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    /* Base Styles */
+    body {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding-bottom: 3rem;
+    }
+
+    /* Container */
+    .container {
+      max-width: 640px;
+      background-color: rgba(0, 0, 0, 0.75);
+      padding: 3rem 2.5rem 2.5rem;
+      margin-top: 3.5rem;
+      border-radius: 16px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+      transition: box-shadow 0.3s ease;
+    }
+    .container:hover {
+      box-shadow: 0 20px 60px rgba(255, 111, 97, 0.7);
+    }
+
+    /* Header */
+    h1 {
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+      font-size: 2.75rem;
+    }
+    .tagline {
+      text-align: center;
+      font-size: 1.15rem;
+      font-style: italic;
+      color: #ff8c94;
+      margin-bottom: 2rem;
+      letter-spacing: 0.05em;
+      user-select: none;
+    }
+
+    /* Info Section */
+    .info-box {
+      background: rgba(255 255 255 / 0.1);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
+      box-shadow: inset 0 0 14px rgba(255, 111, 97, 0.25);
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #ffd7d7;
+      letter-spacing: 0.02em;
+      user-select: none;
+    }
+
+    /* Form Styles */
+    form label {
+      font-weight: 600;
+      color: #f0e6ff;
+    }
+    .form-control {
+      background-color: rgba(255 255 255 / 0.1);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 500;
+      padding-left: 2.8rem;
+      transition: background-color 0.3s ease;
+    }
+    .form-control::placeholder {
+      color: #d9cbf7;
+      font-style: italic;
+    }
+    .form-control:focus {
+      background-color: rgba(255 255 255 / 0.25);
+      box-shadow: 0 0 6px #ff6f61;
+      color: #fff;
+    }
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ff6f61;
+      pointer-events: none;
+      font-size: 1.25rem;
+    }
+    .form-group {
+      position: relative;
+    }
+
+    /* Button */
+    .btn-primary {
+      background: #ff6f61;
+      border: none;
+      width: 100%;
+      font-weight: 700;
+      font-size: 1.25rem;
+      padding: 0.85rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(255, 111, 97, 0.6);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+    .btn-primary:hover {
+      background: #e65c4f;
+      box-shadow: 0 6px 22px rgba(230, 92, 79, 0.8);
+    }
+
+    /* Recommendations */
+    #recommendations {
+      margin-top: 2.5rem;
+      background: rgba(255 255 255 / 0.12);
+      padding: 1.75rem 1.5rem;
+      border-radius: 14px;
+      box-shadow: inset 0 0 14px rgba(255, 111, 97, 0.35);
+      min-height: 80px;
+      font-size: 1.05rem;
+      color: #ffe8e6;
+      letter-spacing: 0.02em;
+      user-select: text;
+    }
+    .domain-card {
+      margin-bottom: 1.4rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid rgba(255, 111, 97, 0.4);
+      opacity: 0;
+      animation: fadeInUp 0.7s forwards;
+    }
+    .domain-title {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #ff8c94;
+      display: inline-block;
+      padding: 0.3em 1em;
+      background: #331a1a;
+      border-radius: 50px;
+      box-shadow: 0 4px 12px rgba(255, 111, 97, 0.6);
+      user-select: none;
+    }
+    .domain-desc {
+      margin-top: 0.25rem;
+      font-weight: 500;
+      color: #ffd7d7;
+      max-width: 90%;
+      line-height: 1.35;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #d1c4e9;
+      opacity: 0.65;
+      user-select: none;
+    }
+    .footer a {
+      color: #ff8c94;
+      text-decoration: none;
+      font-weight: 600;
+      margin: 0 0.5rem;
+      transition: color 0.3s ease;
+    }
+    .footer a:hover {
+      color: #fff;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem 1.5rem;
+        margin-top: 2rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .domain-title {
+        font-size: 1.15rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container shadow-lg" role="main" aria-labelledby="main-title">
+    <h1 id="main-title">AI Internship Domain Recommender</h1>
+    <p class="tagline" aria-label="Motivational tagline">Unlock your potential — find the perfect internship domain based on your passions and skills!</p>
+
+    <section class="info-box" aria-label="About the recommendation engine">
+      <strong>How it works:</strong>  
+      <ul>
+        <li>Enter your interests and past experiences in the form below.</li>
+        <li>Our AI-powered engine analyzes your input keywords and matches them to internship domains.</li>
+        <li>Receive personalized internship domain recommendations with detailed descriptions.</li>
+      </ul>
+      <p><em>Note:</em> This tool is designed to guide you towards internship domains that best fit your profile. For best results, list as many relevant interests and skills as possible.</p>
+    </section>
+
+    <form id="recommendationForm" novalidate aria-describedby="form-instructions" autocomplete="off">
+      <div class="mb-3 form-group">
+        <label for="name" class="form-label">Your Name <i class="fa fa-user"></i></label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          name="name"
+          placeholder="Enter your full name"
+          required
+          autofocus
+          aria-required="true"
+          aria-describedby="nameHelp"
+        />
+        <small id="nameHelp" class="form-text text-light">We'll personalize recommendations for you.</small>
+        <i class="fa fa-user input-icon"></i>
+      </div>
+
+      <div class="mb-3 form-group">
+        <label for="interests" class="form-label">Your Interests (comma separated) <i class="fa fa-heart"></i></label>
+        <input
+          type="text"
+          class="form-control"
+          id="interests"
+          name="interests"
+          placeholder="e.g., Python, Machine Learning, UI Design"
+          required
+          aria-required="true"
+          aria-describedby="interestsHelp"
+        />
+        <small id="interestsHelp" class="form-text text-light">
+          List topics, skills, or areas you are passionate about.
+        </small>
+        <i class="fa fa-heart input-icon"></i>
+      </div>
+
+      <div class="mb-3 form-group">
+        <label for="experience" class="form-label">Your Past Experience / Skills (comma separated) <i class="fa fa-briefcase"></i></label>
+        <input
+          type="text"
+          class="form-control"
+          id="experience"
+          name="experience"
+          placeholder="e.g., React, Excel, Photoshop"
+          required
+          aria-required="true"
+          aria-describedby="experienceHelp"
+        />
+        <small id="experienceHelp" class="form-text text-light">
+          Include previous internships, projects, or tools you have used.
+        </small>
+        <i class="fa fa-briefcase input-icon"></i>
+      </div>
+
+      <button type="submit" class="btn btn-primary" aria-label="Get internship domain recommendations">
+        Get Recommendations
+      </button>
+    </form>
+
+    <section id="recommendations" class="recommendation-list" aria-live="polite" role="region" aria-atomic="true" tabindex="0" aria-label="Internship domain recommendations">
+      <!-- Recommendations will appear here -->
+      <p style="opacity: 0.6; font-style: italic; user-select:none;">Your personalized internship domain recommendations will appear here after submission.</p>
+    </section>
+
+    <footer class="footer" role="contentinfo">
+      &copy; 2025 AI Internship Domain Recommender | 
+      <a href="mailto:contact@aiinternship.com" aria-label="Contact email">Contact</a> | 
+      <a href="https://github.com/yourgithub" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository">GitHub</a>
+    </footer>
+  </div>
+
+  <script>
+    // Internship domains with keywords and descriptions
+    const internshipDomains = {
+      "Data Science": {
+        keywords: ["data", "machine learning", "statistics", "python", "analysis", "ai", "deep learning", "modeling"],
+        description: "Analyze data and build models to uncover insights and make data-driven decisions."
+      },
+      "Web Development": {
+        keywords: ["html", "css", "javascript", "frontend", "backend", "react", "django", "flask", "node", "vue", "angular"],
+        description: "Build and maintain websites and web applications using modern frameworks."
+      },
+      "Mobile Development": {
+        keywords: ["android", "ios", "flutter", "swift", "kotlin", "react native", "mobile"],
+        description: "Create mobile apps for Android and iOS platforms."
+      },
+      "Cybersecurity": {
+        keywords: ["security", "network", "cryptography", "ethical hacking", "penetration testing", "firewall", "threat"],
+        description: "Protect systems and networks from cyber threats and vulnerabilities."
+      },
+      "Marketing": {
+        keywords: ["seo", "content", "digital marketing", "social media", "branding", "advertising", "campaign"],
+        description: "Promote brands and products using digital and traditional marketing strategies."
+      },
+      "Finance": {
+        keywords: ["accounting", "financial analysis", "investment", "excel", "risk management", "audit", "budget"],
+        description: "Manage financial records, analyze investments, and assess risks."
+      },
+      "Design": {
+        keywords: ["ui", "ux", "graphic design", "photoshop", "illustrator", "adobe", "wireframing", "creativity"],
+        description: "Design engaging user interfaces and creative visuals."
+      },
+      "Project Management": {
+        keywords: ["planning", "scrum", "agile", "kanban", "leadership", "coordination", "management"],
+        description: "Organize and oversee projects to ensure timely and successful completion."
+      }
+    };
+
+    // Recommend domains based on keyword matching
+    function recommendDomains(interestsStr, experienceStr) {
+      const interests = interestsStr.toLowerCase().split(',').map(i => i.trim());
+      const experience = experienceStr.toLowerCase().split(',').map(e => e.trim());
+
+      const scoreMap = {};
+      for (const domain in internshipDomains) {
+        scoreMap[domain] = 0;
+        for (const keyword of internshipDomains[domain].keywords) {
+          if (interests.includes(keyword) || experience.includes(keyword)) {
+            scoreMap[domain]++;
+          }
+        }
+      }
+
+      // Sort domains by descending score, filter zeroes
+      const sortedDomains = Object.entries(scoreMap)
+        .filter(([_, score]) => score > 0)
+        .sort((a, b) => b[1] - a[1])
+        .map(([domain]) => domain);
+
+      return sortedDomains.length ? sortedDomains : ["General Internship Opportunities"];
+    }
+
+    // Handle form submission
+    document.getElementById('recommendationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim() || "there";
+      const interests = document.getElementById('interests').value.trim();
+      const experience = document.getElementById('experience').value.trim();
+      const recommendationsDiv = document.getElementById('recommendations');
+
+      if (!interests || !experience) {
+        recommendationsDiv.innerHTML = `<p>Please enter your interests and experience to get recommendations.</p>`;
+        recommendationsDiv.focus();
+        return;
+      }
+
+      const recommendations = recommendDomains(interests, experience);
+
+      let html = `<h3>Hi ${name}, based on your inputs, we recommend these internship domains:</h3>`;
+
+      recommendations.forEach((domain, index) => {
+        const desc = internshipDomains[domain]?.description || "Explore various internship opportunities.";
+        html += `
+          <article class="domain-card" style="animation-delay: ${index * 0.2}s" tabindex="0">
+            <h4 class="domain-title">${domain}</h4>
+            <p class="domain-desc">${desc}</p>
+          </article>
+        `;
+      });
+
+      recommendationsDiv.innerHTML = html;
+      recommendationsDiv.focus();
+
+      // Scroll recommendations smoothly into view
+      recommendationsDiv.scrollIntoView({ behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>
